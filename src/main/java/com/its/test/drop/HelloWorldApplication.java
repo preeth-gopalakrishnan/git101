@@ -1,5 +1,9 @@
 package com.its.test.drop;
 
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+
+import com.its.test.drop.db.PersonDao;
+import com.its.test.drop.db.PersonDaoImpl;
 import com.its.test.drop.health.TemplateHealthCheck;
 import com.its.test.drop.resources.HelloWorldResource;
 
@@ -25,7 +29,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 		// TODO: application initialization
 		bootstrap.setConfigurationSourceProvider(new ResourceConfigurationSourceProvider());
 	}
-	
+
 
 	@Override
 	public void run(final HelloWorldConfiguration configuration,
@@ -38,6 +42,16 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 				new TemplateHealthCheck(configuration.getTemplate());
 		environment.healthChecks().register("template", healthCheck);
 		environment.jersey().register(resource);
+
+
+		environment.jersey().register(new AbstractBinder() {
+			@Override
+			protected void configure() {
+				// bind( implementation ).to( contract )
+				bind(PersonDaoImpl.class).to(PersonDao.class);
+			}
+		});
+
 		// TODO: implement application
 	}
 
